@@ -14,10 +14,13 @@ proc finish {} {
 
 set attacker [$ns node]
 set victim [$ns node]
-set attacker_router [$ns node]
-set victim_router [$ns node]
-set innocent_router [$ns node]
 set innocentguy [$ns node]
+
+$ns node-config -BGP ON
+set attacker_router [$ns node 0:10.0.0.1]
+set victim_router [$ns node 1:10.0.1.1]
+set innocent_router [$ns node 1:10.0.2.1]
+$ns node-config -BGP OFF
 
 $ns duplex-link $innocentguy $innocent_router 15Mb 10ms DropTail
 $ns duplex-link $attacker $attacker_router 15Mb 10ms DropTail
@@ -25,6 +28,18 @@ $ns duplex-link $victim_router $attacker_router 15Mb 10ms DropTail
 $ns duplex-link $victim_router $innocent_router 15Mb 10ms DropTail
 $ns duplex-link $attacker_router $innocent_router 15Mb 10ms DropTail
 $ns duplex-link $victim $victim_router 15Mb 10ms DropTail
+
+set bgp_agent0 [$attacker_router get-bgp-agent] ;# gets the BGP routing agent
+$bgp_agent0 bgp-id 10.0.0.1 ;# sets the BGP ID
+$bgp_agent0 set-auto-config
+
+set bgp_agent1 [$victim_router get-bgp-agent] ;# gets the BGP routing agent
+$bgp_agent1 bgp-id 10.0.1.1 ;# sets the BGP ID
+$bgp_agent1 set-auto-config
+
+set bgp_agent2 [$innocent_router get-bgp-agent] ;# gets the BGP routing agent
+$bgp_agent2 bgp-id 10.0.2.1 ;# sets the BGP ID
+$bgp_agent2 set-auto-config
 
 $ns duplex-link-op $victim $victim_router color orange
 $ns duplex-link-op $victim_router $attacker_router color orange
