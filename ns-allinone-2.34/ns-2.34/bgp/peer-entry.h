@@ -93,6 +93,9 @@ public:
   const static int NONCLIENT = 2;
   
   // ........................ member data .......................... //
+  /** the generation bit */
+  int generationBit;
+
 
   /** The rtProtoBGP to which this peer information applies. */
   rtProtoBGP * bgp;
