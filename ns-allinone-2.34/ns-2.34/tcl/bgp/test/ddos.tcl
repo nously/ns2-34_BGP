@@ -42,21 +42,21 @@ $bgp_agent1 neighbor 10.0.2.1 remote-as 2
 
 set bgp_agent2 [$innocent_router get-bgp-agent] ;# gets the BGP routing agent
 $bgp_agent2 bgp-id 10.0.2.1 ;# sets the BGP ID
-$bgp_agent1 neighbor 10.0.5.1 remote-as 5
-$bgp_agent1 neighbor 10.0.0.1 remote-as 0
-$bgp_agent1 neighbor 10.0.1.1 remote-as 1
+$bgp_agent2 neighbor 10.0.5.1 remote-as 5
+$bgp_agent2 neighbor 10.0.0.1 remote-as 0
+$bgp_agent2 neighbor 10.0.1.1 remote-as 1
 
 set bgp_agent3 [$attacker get-bgp-agent] ;# gets the BGP routing agent
 $bgp_agent3 bgp-id 10.0.3.1 ;# sets the BGP ID
-$bgp_agent1 neighbor 10.0.0.1 remote-as 0
+$bgp_agent3 neighbor 10.0.0.1 remote-as 0
 
 set bgp_agent4 [$victim get-bgp-agent] ;# gets the BGP routing agent
 $bgp_agent4 bgp-id 10.0.4.1 ;# sets the BGP ID
-$bgp_agent1 neighbor 10.0.1.1 remote-as 1
+$bgp_agent4 neighbor 10.0.1.1 remote-as 1
 
 set bgp_agent5 [$innocentguy get-bgp-agent] ;# gets the BGP routing agent
 $bgp_agent5 bgp-id 10.0.5.1 ;# sets the BGP ID
-$bgp_agent1 neighbor 10.0.0.1 remote-as 1
+$bgp_agent5 neighbor 10.0.2.1 remote-as 2
 
 
 

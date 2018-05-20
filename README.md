@@ -1,6 +1,6 @@
 in C++
 1. make attribute ieB in peer-entry{.h, .cc}
-2. go to line 1247 seek to line 1265 in rtProtoBGP.cc (listen function) then call sendiTrace(msg) and
+2. go to line 1247 seek to line 1265 in rtPr	GP.cc (listen function) then call sendiTrace(msg) and
 modify code to set ieB of peer-entry to 0
 3. make attribute iiB in routeinfo{.h, .cc}
 4. loc_rib in rtProtoBGP{.h, .cc} is a routing table
