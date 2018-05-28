@@ -1,11 +1,14 @@
 set nf [open out.nam w]
+set tr [open out.tr w]
 set ns [new Simulator]
 $ns namtrace-all $nf
+$ns trace-all $tr
 
 proc finish {} {
-	global ns nf
+	global ns nf tr
 	$ns flush-trace
 	close $nf
+	close $tr
 	exec nam out.nam &
 	exit 0
 }
@@ -21,12 +24,12 @@ set victim [$ns node 0:10.0.4.1]
 set innocentguy [$ns node 0:10.0.5.1]
 $ns node-config -BGP OFF
 
-$ns duplex-link $innocentguy $innocent_router 15Mb 10ms DropTail
-$ns duplex-link $attacker $attacker_router 15Mb 10ms DropTail
-$ns duplex-link $victim_router $attacker_router 15Mb 10ms DropTail
-$ns duplex-link $victim_router $innocent_router 15Mb 10ms DropTail
-$ns duplex-link $attacker_router $innocent_router 15Mb 10ms DropTail
-$ns duplex-link $victim $victim_router 15Mb 10ms DropTail
+$ns duplex-link $innocentguy $innocent_router 250Mb 10ms DropTail
+$ns duplex-link $attacker $attacker_router 250Mb 10ms DropTail
+$ns duplex-link $victim_router $attacker_router 250Mb 10ms DropTail
+$ns duplex-link $victim_router $innocent_router 250Mb 10ms DropTail
+$ns duplex-link $attacker_router $innocent_router 250Mb 10ms DropTail
+$ns duplex-link $victim $victim_router 250Mb 10ms DropTail
 
 set bgp_agent0 [$attacker_router get-bgp-agent] ;# gets the BGP routing agent
 $bgp_agent0 bgp-id 10.0.0.1 ;# sets the BGP ID
@@ -85,6 +88,8 @@ $tcp0 set fid_ 2
 set ftp [new Application/FTP]
 $ftp attach-agent $tcp0
 $ftp set type_ FTP
+$ftp set packetSize 500
+$ftp set rate_ 5mb
 
 $ns connect $tcp0 $sink0
 
@@ -99,7 +104,7 @@ $ns attach-agent $attacker $udp0
 set cbr0 [new Application/Traffic/CBR]
 $cbr0 attach-agent $udp0
 $cbr0 set packetSize_ 500
-$cbr0 set interval_ 0.0005
+$cbr0 set rate_ 100mb
 $udp0 set fid_ 1
 
 set null0 [new Agent/Null]
@@ -137,17 +142,21 @@ $ns connect $icmp_victim1 $icmp1
 $ns connect $icmp_victim2 $icmp2
 
 proc x {} {
-	global attacker_router victim_router innocent_router ns icmp0 icmp1 icmp2 icmp_victim0 icmp_victim1 icmp_victim2
-	
-	set number0 [expr {int(rand()*5)}]
-	set number1 [expr {int(rand()*5)}]
-	set number2 [expr {int(rand()*5)}]
+	global ns icmp1
+	$icmp1 send
+	$ns after 0.95 "x"
+}
 
-	if {$number0 == 1} { $icmp0 send }
-	if {$number1 == 1} { $icmp1 send }
-	if {$number2 == 1} { $icmp2 send }
-	
-	$ns after 0.1 "x"
+proc y {} {
+	global ns icmp0
+	$icmp0 send
+	$ns after 1 "y"
+}
+
+proc z {} {
+	global ns icmp2
+	$icmp2 send
+	$ns after 20 "z"
 }
 
 # ================================================= end of icmp agent  ======================================================
@@ -189,7 +198,7 @@ proc x {} {
 #$ns at 31 "$bgp_agent5 show-routes"
 
 
-$ns at 5 "x"
+$ns at 5 "x; y; z"
 $ns at 5 "$ftp start"
 $ns at 6 "$cbr0 start"
 $ns at 10 "$cbr0 stop"
